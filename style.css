@@ -1,0 +1,282 @@
+/* Grundlegende Stile & Farbschema */
+:root {
+    --header-bg: #333; /* Dunkles Grau für die obere Leiste */
+    --nav-active-bg: #4a5462; /* Dunkler Hintergrund für aktive Tabs */
+    --border-color: #ccc;
+    --box-bg: #f7f7f7; /* Hintergrund der Suchbox */
+    --font-family: Arial, sans-serif;
+    --blue: #007bff;
+}
+
+/* HINZUGEFÜGT für Sticky Footer */
+html {
+    height: 100%;
+}
+
+body {
+    font-family: var(--font-family);
+    margin: 0;
+    background-color: #fff; /* Weißer Hintergrund statt grau */
+    color: #333;
+    /* HINZUGEFÜGT für Sticky Footer */
+    display: flex;
+    flex-direction: column;
+    min-height: 100%;
+}
+
+.container {
+    width: 90%;
+    max-width: 1200px; /* Begrenzt die maximale Breite */
+    margin: 0 auto; /* Zentriert den Container */
+    padding: 0 15px;
+}
+
+/* 1. Obere Kopfzeile */
+.top-header {
+    background-color: var(--header-bg);
+    color: white;
+    padding: 10px 0;
+    font-size: 0.9em;
+}
+
+.top-header .container {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.top-header a {
+    color: white;
+    text-decoration: none;
+}
+
+.logo {
+    font-weight: bold;
+    font-size: 1.2em;
+}
+
+/* 2. Hauptnavigation */
+.main-nav {
+    background-color: #fff;
+    border-bottom: 1px solid var(--border-color);
+}
+
+.main-nav ul {
+    margin: 0;
+    padding: 0;
+    list-style: none;
+    display: flex;
+}
+
+.main-nav a {
+    display: block;
+    padding: 15px 20px;
+    text-decoration: none;
+    color: #333;
+    font-weight: bold;
+}
+
+.main-nav a.active, .main-nav a:hover {
+    background-color: var(--nav-active-bg);
+    color: white;
+}
+
+/* 3. Hauptinhalt */
+main.container {
+    padding-top: 20px;
+    padding-bottom: 40px;
+    /* HINZUGEFÜGT für Sticky Footer: Hauptinhalt füllt den Platz */
+    flex: 1;
+}
+
+.breadcrumb {
+    font-size: 0.9em;
+    color: #555;
+    margin-bottom: 20px;
+}
+.breadcrumb a {
+    color: #007bff; /* Typische Link-Farbe */
+    text-decoration: none;
+}
+.breadcrumb a:hover {
+    text-decoration: underline;
+}
+
+h1 {
+    font-size: 1.8em;
+    margin-top: 0;
+    margin-bottom: 20px;
+    font-weight: normal;
+}
+
+/* 4. Such-Box */
+.search-box {
+    background-color: var(--box-bg);
+    border: 1px solid var(--border-color);
+    padding: 20px;
+    border-radius: 4px;
+}
+
+.form-group {
+    margin-bottom: 15px;
+}
+
+.form-group label {
+    display: block; /* Label über dem Input */
+    margin-bottom: 5px;
+    font-weight: bold;
+    font-size: 0.9em;
+}
+
+.form-group input, .form-group select {
+    width: 100%;
+    padding: 8px;
+    border: 1px solid var(--border-color);
+    border-radius: 3px;
+    box-sizing: border-box; /* Wichtig für 100% Breite */
+}
+
+/* 5. Buttons */
+.buttons {
+    margin-top: 20px;
+}
+
+.buttons button {
+    padding: 10px 20px;
+    border-radius: 3px;
+    cursor: pointer;
+    font-size: 1em;
+    margin-right: 15px;
+}
+
+/* Hauptbutton */
+button[type="submit"] {
+    background-color: var(--blue);
+    color: #ffffff;
+    border: 1px solid #bbb;
+    font-weight: bold;
+}
+button[type="submit"]:hover {
+    background-color: #e0e0e0;
+}
+
+/* Sekundäre Buttons als Links */
+.link-button {
+    background: none;
+    border: none;
+    color: #000000; /* Typische Link-Farbe */
+    font-weight: normal;
+    padding: 0;
+}
+.link-button:hover {
+    text-decoration: underline;
+}
+.link-button i {
+    margin-right: 5px;
+}
+
+/* 6. Fußzeile */
+.main-footer {
+    background-color: #f0f0f0;
+    border-top: 1px solid var(--border-color);
+    padding: 10px 0; /* <<< Wert von 20px auf 10px reduziert */
+    text-align: center;
+    font-size: 0.8em;
+    color: #666;
+}
+
+/* Haupt-Layout des Footers mit Flexbox */
+.footer-layout {
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-end; /* Geändert von 'center' auf 'flex-end' */
+    gap: 50px;
+}
+
+.footer-section {
+    flex-shrink: 0; /* Verhindert, dass Bereiche schrumpfen */
+}
+
+/* Linker Bereich */
+.footer-links {
+    /* NEU: Richtet die Text- und Icon-Links nebeneinander aus */
+    display: flex;
+    align-items: center;
+    gap: 20px; /* Abstand zwischen Text- und Icon-Block */
+}
+
+.footer-links a {
+    color: #555;
+    text-decoration: none;
+    font-size: 0.8em;
+    margin-right: 15px;
+}
+.footer-links nav a {
+    text-transform: uppercase; /* IMPRESSUM, etc. in Großbuchstaben */
+}
+.footer-links a:hover {
+    text-decoration: underline;
+}
+.footer-sub-links {
+    margin-top: 0; /* Alte Korrektur wird nicht mehr gebraucht */
+    display: flex;
+    align-items: center;
+    gap: 15px;
+}
+.footer-sub-links i {
+    font-size: 0.8em; /* Macht die Icons größer */
+}
+.footer-sub-links span {
+    font-size: 0.8em;
+    color: #555;
+}
+
+
+/* Mittlerer Bereich */
+.footer-logo {
+    flex-grow: 1; /* Nimmt den restlichen Platz in der Mitte ein */
+    text-align: center;
+}
+.his-logo-text {
+    font-size: 2em;
+    font-weight: bold;
+    color: #4a5462;
+    letter-spacing: 2px;
+}
+
+.footer-center {
+    text-align: center;
+}
+
+/* Rechter Bereich */
+.footer-meta {
+    text-align: right;
+    font-size: 0.8em;
+}
+.language-selector {
+    margin-bottom: 5px;
+}
+.language-selector span {
+    display: block;
+    margin-bottom: 3px;
+    color: #555;
+}
+.language-button {
+    display: inline-block;
+    border: 1px solid #ccc;
+    padding: 5px 10px;
+    border-radius: 3px;
+    color: #555;
+    text-decoration: none;
+}
+.language-button:hover {
+    background-color: #f0f0f0;
+    text-decoration: none;
+}
+.language-button i {
+    margin-right: 5px;
+}
+.tech-info {
+    font-size: 0.9em;
+    color: #888;
+}
