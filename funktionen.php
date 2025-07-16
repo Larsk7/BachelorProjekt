@@ -155,7 +155,7 @@ function php_MultiplePbvsOver6Months(int $persnr, int $pbvnr, string $stichtag, 
 
     return $multiplePbvsOver6Months; 
 }
-function php_MultiplePbusOver6Months(int $persnr, ?string $pbu_art, string $stichtag, array $all_pbu_data): int {
+function php_MultiplePbusOver6Months(int $persnr, int $pbvnr, string $stichtag, array $all_pbu_data): int {
     $multiplePbusOver6Months = 0; 
 
     $stichtag_dt = new DateTime($stichtag);
