@@ -123,7 +123,7 @@ document.getElementById('voterForm').addEventListener('submit', function(event) 
     formData.append('stichtag', stichtag);
     formData.append('wahl', wahl);
 
-    fetch('SQLs/2_mit_pbv_dis_a_zwT.php', { // Path to your PHP script
+    fetch('2_mit_pbv_dis_a_zwT.php', { // Path to your PHP script
         method: 'POST', // Use POST method for sending data
         body: formData // Send form data
     })
