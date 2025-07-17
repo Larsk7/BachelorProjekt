@@ -15,6 +15,15 @@ require_once 'db_loader.php';
 require_once '1_join_sva_portal.php';
 require_once '2_leftjoin_info.php';
 require_once '3_aggregate_info.php';
+require_once '4_filter_mit_pbv.php';
+require_once '5_1_lehr_dt.php';
+require_once '5_2_lehr_dis_dt.php';
+require_once '5_1_wiss_dt.php';
+require_once '5_2_wiss_dis_dt.php';
+require_once '5_1_sons_dt.php';
+require_once '5_2_sons_dis_dt.php';
+require_once '5_studierende.php';
+require_once '5_promovierende.php';
 
 $stichtag = $_POST['stichtag'] ?? null;
 $wahl = $_POST['wahl'] ?? null;
@@ -51,8 +60,48 @@ $finalTransformedDataPhase2 = leftjoin_info(
     $rawData['pbu_lookup_data']
 );
 
-// --- 3 ---
-$finalOutputData = aggregate_info($finalTransformedDataPhase2);
+// --- 3 --- 
+$aggregatedData = aggregate_info($finalTransformedDataPhase2); // Ergebnis der Abfrage "mitarbeiter-pbv-distinct-a-zwT (2/6 auf der ReadMe-todo-liste)
+
+// --- 4 ---
+$dataDisBFvzwT = filterMitPbv($aggregatedData); // Ergebnis von "mitarbeiter_pbv_distinct_b_filtered_von_zwT 
+
+// --- 5 --- (die 5 Quellen -> Join um WVZ-Stichtag zu bekommen)
+
+    //für lehr
+    $dataLehrDt = filterLehrDt($dataDisBFvzwT); // 5_1_lehr_dt data
+
+    $filteredLehrDisDt = aggregateAndFilterLehrDisDt($dataLehrDt); // 5_2 filter and aggregate
+    $dataLehrDisDt = SelectLehrDisDt($filteredLehrDisDt);                    // 5_2_lehr_dis_dt data
+
+    //für wiss
+    $dataWissDt = filterWissDt($dataDisBFvzwT); // 5_1_wiss_dt data
+
+    $dataWissDisDt = WissDisDt($dataWissDt); // 5_2_wiss_dis_dt data
+
+    //für sons
+    $dataSonsDt = filterSonsDt($dataDisBFvzwT); // 5_1_sons_dt data
+
+    $dataSonsDisDt = SonsDisDt($dataSonsDt); // 5_2_sons_dis_dt data      
+    
+    //für studierende
+    $dataStudierende = processStudierende(
+        DB_CONFIG_PORTAL,
+        $stichtag,
+        TBL_INFO_LEHRBEREICHE,
+        TBL_INFO_FACHSCHAFTEN,
+        TBL_INFO_ABTEILUNGEN
+    );
+
+    //für promovierende
+    $dataPromovierende = processPromovierende(
+        DB_CONFIG_PORTAL, // Rohdaten von mannheim.wahlen2
+        $stichtag,
+        TBL_INFO_LEHRBEREICHE,
+        TBL_INFO_FACHSCHAFTEN,
+        TBL_INFO_ABTEILUNGEN
+    );
+
 
 // Output
 $buffered_output = ob_get_clean();
@@ -65,4 +114,4 @@ if (!empty($buffered_output)) {
     exit();
 }
 
-echo json_encode($finalOutputData);
+echo json_encode($dataPromovierende);

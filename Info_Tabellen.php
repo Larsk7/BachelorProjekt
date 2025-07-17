@@ -38,6 +38,26 @@ const TBL_INFO_WÄHLENDENGRUPPE = [
     ['ID' => '5', 'nr' => '5', 'name' => 'sonstige'     , 'description' => 'Sonstige Mitarbeiter'     ],
 ];
 
+const TBL_INFO_LEHRBEREICHE = [
+    ['ID' => '1',  'name' => '7000100130', 'description' => 'Anglistisches Seminar'                             , 'fachschaft' => 'split'],
+    ['ID' => '2',  'name' => '7000100140', 'description' => 'Medien- und Kommunikationswissenschaft'            , 'fachschaft' => 'mkw'],
+    ['ID' => '3',  'name' => '7000100040', 'description' => 'Fachbereich Volkswirtschaftslehre'                 , 'fachschaft' => 'vwl'],
+    ['ID' => '4',  'name' => '7000100150', 'description' => 'Fachbereich Mathematik'                            , 'fachschaft' => 'fim'],
+    ['ID' => '5',  'name' => '7000100120', 'description' => 'Romanisches Seminar'                               , 'fachschaft' => 'split'],
+    ['ID' => '6',  'name' => '7000100020', 'description' => 'Fachbereich Betriebswirtschaftslehre'              , 'fachschaft' => 'bwl'],
+    ['ID' => '7',  'name' => '7000100050', 'description' => 'Fachbereich Soziologie'                            , 'fachschaft' => 'sopo'],
+    ['ID' => '8',  'name' => '7000100170', 'description' => 'Universität Mannheim'                              , 'fachschaft' => ''],
+    ['ID' => '9',  'name' => '7000100160', 'description' => 'Institut für Informatik und Wirtschaftsinformatik' , 'fachschaft' => 'fim'],
+    ['ID' => '10', 'name' => '7000100100', 'description' => 'Historisches Institut'                             , 'fachschaft' => 'fga'],
+    ['ID' => '11', 'name' => '7000100010', 'description' => 'Fachbereich Rechtswissenschaft'                    , 'fachschaft' => 'jura'],
+    ['ID' => '12', 'name' => '7000100060', 'description' => 'Fachbereich Politische Wissenschaft'               , 'fachschaft' => 'sopo'],
+    ['ID' => '13', 'name' => '7000100030', 'description' => 'Fachbereich Wirtschaftspädagogik'                  , 'fachschaft' => 'wipäd'],
+    ['ID' => '14', 'name' => '7000100070', 'description' => 'Fachbereich Psychologie'                           , 'fachschaft' => 'psycho'],
+    ['ID' => '15', 'name' => '7000100110', 'description' => 'Seminar für Deutsche Philologie'                   , 'fachschaft' => 'split'],
+    ['ID' => '16', 'name' => '7000100090', 'description' => 'Fachbereich Philosophie'                           , 'fachschaft' => 'split'],
+    ['ID' => '17', 'name' => '1050400000', 'description' => 'Slavisches Seminar'                                , 'fachschaft' => 'split'],
+];
+
 
 if (!function_exists('create_lookup_map')) {
     function create_lookup_map(array $table, string $keyColumn): array {
