@@ -16,6 +16,7 @@ require_once '1_join_sva_portal.php';
 require_once '2_leftjoin_info.php';
 require_once '3_aggregate_info.php';
 require_once '4_filter_mit_pbv.php';
+
 require_once '5_1_lehr_dt.php';
 require_once '5_2_lehr_dis_dt.php';
 require_once '5_1_wiss_dt.php';
@@ -24,6 +25,9 @@ require_once '5_1_sons_dt.php';
 require_once '5_2_sons_dis_dt.php';
 require_once '5_studierende.php';
 require_once '5_promovierende.php';
+
+require_once '6_wvz_st.php';
+
 
 $stichtag = $_POST['stichtag'] ?? null;
 $wahl = $_POST['wahl'] ?? null;
@@ -102,6 +106,15 @@ $dataDisBFvzwT = filterMitPbv($aggregatedData); // Ergebnis von "mitarbeiter_pbv
         TBL_INFO_ABTEILUNGEN
     );
 
+// --- 6 ---
+
+$dataVwzSt = wvz_st(
+    $dataLehrDisDt,
+    $dataWissDisDt,
+    $dataStudierende,
+    $dataPromovierende,
+    $dataSonsDisDt
+);
 
 // Output
 $buffered_output = ob_get_clean();
@@ -114,4 +127,4 @@ if (!empty($buffered_output)) {
     exit();
 }
 
-echo json_encode($dataPromovierende);
+echo json_encode($dataVwzSt);
