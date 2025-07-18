@@ -27,7 +27,10 @@ require_once '5_studierende.php';
 require_once '5_promovierende.php';
 
 require_once '6_wvz_st.php';
-
+require_once '7_wvz_st_f.php';
+require_once '8_wvz_st_f_ecum.php';
+require_once '9_wvz_st_f_ecum_2020.php';
+require_once '10_wvz_befüllen.php';
 
 $stichtag = $_POST['stichtag'] ?? null;
 $wahl = $_POST['wahl'] ?? null;
@@ -106,15 +109,39 @@ $dataDisBFvzwT = filterMitPbv($aggregatedData); // Ergebnis von "mitarbeiter_pbv
         TBL_INFO_ABTEILUNGEN
     );
 
-// --- 6 ---
+// --- 6 --- liefert wvz_st
 
-$dataVwzSt = wvz_st(
+$dataWvzSt = wvz_st(
     $dataLehrDisDt,
     $dataWissDisDt,
     $dataStudierende,
     $dataPromovierende,
     $dataSonsDisDt
 );
+
+// --- 7 --- liefert wvz_st_form
+$dataWvzStF = wvz_st_f(
+    $dataWvzSt,
+    TBL_INFO_WÄHLENDENGRUPPE,
+    TBL_INFO_ABTEILUNGEN,
+    TBL_INFO_FAKULTÄTEN,
+    TBL_INFO_FACHSCHAFTEN
+);
+
+// --- 8 --- liefert wvz_st_form_ecum
+
+$dataWvzStFEcum = wvz_st_f_ecum(
+        $dataWvzStF, 
+        DB_CONFIG_PORTAL, 
+        TBL_INFO_WÄHLENDENGRUPPE
+    );
+
+// --- 9 --- liefert wvz_st_form_ecum_2020
+
+
+// --- 10 --- liefert wvz_befüllen
+
+
 
 // Output
 $buffered_output = ob_get_clean();
@@ -127,4 +154,4 @@ if (!empty($buffered_output)) {
     exit();
 }
 
-echo json_encode($dataVwzSt);
+echo json_encode($dataWvzStFEcum);
