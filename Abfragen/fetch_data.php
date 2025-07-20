@@ -30,6 +30,8 @@ require_once '6_wvz_st.php';
 require_once '7_wvz_st_f.php';
 require_once '8_wvz_st_f_ecum.php';
 require_once '9_wvz_st_f_ecum_2020.php';
+require_once '9_1_hilf_degree.php';
+require_once '9_2_hilf_degree_dis.php';
 require_once '10_wvz_befüllen.php';
 
 $stichtag = $_POST['stichtag'] ?? null;
@@ -138,7 +140,16 @@ $dataWvzStFEcum = wvz_st_f_ecum(
 
 // --- 9 --- liefert wvz_st_form_ecum_2020
 
+$dataHilfDegree = hilf_degree(DB_CONFIG_PORTAL);
 
+$dataHilfDegreeDis = hilf_degree_dis($dataHilfDegree);
+
+$dataWvzStFEcum2020 = wvz_st_f_ecum_2020(
+    $dataWvzStFEcum,
+    DB_CONFIG_PORTAL,
+    $dataHilfDegreeDis,
+    $stichtag
+);
 // --- 10 --- liefert wvz_befüllen
 
 
@@ -154,4 +165,4 @@ if (!empty($buffered_output)) {
     exit();
 }
 
-echo json_encode($dataWvzStFEcum);
+echo json_encode($dataWvzStFEcum2020);
