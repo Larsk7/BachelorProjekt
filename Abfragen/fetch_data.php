@@ -34,6 +34,15 @@ require_once '9_1_hilf_degree.php';
 require_once '9_2_hilf_degree_dis.php';
 require_once '10_wvz_befüllen.php';
 
+// 4.
+require_once '11_fin_wvz_promprob.php';
+require_once '12_fin_wv_promprob_akad.php';
+require_once '13_fin_wvz_promZdel.php';
+
+// 5. und 6.
+require_once '14_updateFakultaetPromovierende.php';
+require_once '15_fin_wvz.php';
+
 $stichtag = $_POST['stichtag'] ?? null;
 $wahl = $_POST['wahl'] ?? null;
 
@@ -151,8 +160,25 @@ $dataWvzStFEcum2020 = wvz_st_f_ecum_2020(
     $stichtag
 );
 // --- 10 --- liefert wvz_befüllen
+// überflüssig, da diese Abfrage nur eine neue Tabelle anlegt und nach Nachname sortiert (ist schon danach sortiert)
 
+// --- 11 --- liefert fin_wvz_promprob
+$fin_wvz_promprob = fin_wvz_promprob($dataWvzStFEcum2020);
 
+// --- 12 --- liefert fin_wvz_promprob_akad
+$fin_wvz_promprob_akad = fin_wvz_promprob_akad($dataWvzStFEcum2020, $fin_wvz_promprob);
+
+// --- 13 --- liefert fin_wvz_promZdel
+$fin_wvz_promZdel = fin_wvz_promZdel(
+    $dataWvzStFEcum2020, // Das zu filternde Original-Array
+    $fin_wvz_promprob_akad // Die IDs/Kriterien zum Löschen
+);
+
+// -- 14 --- liefert FachschaftLückenFürPromovierendeFüllen
+$FSLueckFuerPromFuell = updateFakultaetPromovierende($fin_wvz_promZdel);
+
+// --- 15 --- liefert Fin_WVZ
+$finalesWaehlerverzeichnis = fin_wvz($FSLueckFuerPromFuell);
 
 // Output
 $buffered_output = ob_get_clean();
@@ -165,4 +191,4 @@ if (!empty($buffered_output)) {
     exit();
 }
 
-echo json_encode($dataWvzStFEcum2020);
+echo json_encode($finalesWaehlerverzeichnis);
