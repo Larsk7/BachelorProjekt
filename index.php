@@ -60,8 +60,7 @@
 
                 <div class="buttons">
                     <button type="submit" id="createButton">Erstellen</button>
-                    <button type="button" class="link-button"><i class="fas fa-eye"></i> Preview</button>
-                    <button type="button" class="link-button"><i class="fas fa-download"></i> Download</button>
+                    <button type="button" class="link-button" id="downloadButton"><i class="fas fa-download"></i> Download</button>
                 </div>
             </form>
         </div>
