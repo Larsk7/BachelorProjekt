@@ -92,13 +92,9 @@ function processPromovierende(
         $cond_degree_uniquename = ($degree_uniquename == '06'); // Hier direkt == '06'
         $cond_studystatus = in_array($studystatus, ['E','N','R','B']);
         
-        if (
-            //$cond_degree_progress_start 
-            //&& $cond_degree_progress_end 
-            // Auskommentiert da alle Werte dieser 2 Attribute in Mannheim.Wahlen2 'Null' sind 
-            // (In DBeaver und im TS)
-
-            $cond_study_subject_num 
+        if ($cond_degree_progress_start 
+            && $cond_degree_progress_end 
+            && $cond_study_subject_num 
             && $cond_degree_uniquename 
             && $cond_studystatus
             )

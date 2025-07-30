@@ -31,9 +31,9 @@ function wvz_st_f_ecum(
     // --- Vorbereitung der Lookup-Maps für den Join mit 'mw' ---
     $mannheim_wahlen_filtered_map = []; // Für (SELECT * FROM mannheim_wahlen WHERE lockdate Is Null) as mw
     foreach ($wahl_data as $mw_row) { // Nutzt jetzt $wahl_data
-        if (is_null($mw_row['lockdate'])) {
+        if ($mw_row['lockdate'] === null) {
             // Join-Bedingung ist wv.personid = mw.id
-            $mw_id = $mw_row['id'] ?? null;
+            $mw_id = $mw_row['person_id'] ?? null;
             if ($mw_id !== null) {
                 // Berücksichtigt ORDER BY sequencenumber DESC für First()
                 if (!isset($mannheim_wahlen_filtered_map[$mw_id]) ||
