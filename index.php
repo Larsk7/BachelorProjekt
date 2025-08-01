@@ -40,7 +40,7 @@
             <form id="voterForm">
                 <div class="form-group">
                     <label for="stichtag">Stichtag</label>
-                    <input type="date" id="stichtag" name="stichtag" required>
+                    <input type="date" id="stichtag" name="stichtag" min="2010-01-01" max="2025-08-01" required>
                 </div>
                 <div class="form-group">
                     <label for="wahl">Wahl</label>
@@ -60,7 +60,9 @@
 
                 <div class="buttons">
                     <button type="submit" id="createButton">Erstellen</button>
-                    <button type="button" class="link-button" id="downloadButton"><i class="fas fa-download"></i> Download</button>
+                    <button type="button" class="link-button" id="downloadButton">
+                        <i class="fas fa-download"></i> Download <i class="fas fa-file-excel"></i>
+                    </button>
                 </div>
             </form>
         </div>
@@ -94,17 +96,19 @@
 
         </div>
 
-        <div class="footer-section footer-meta">
-            <div class="language-selector">
-                <span>Standardsprache</span>
-                <a href="#" class="language-button"><i class="fas fa-globe"></i> Deutsch</a>
-            </div>
-            <span class="tech-info">GENERIERT VOM KNOTEN V2_5 IM CLUSTER PROD.</span>
-        </div>
+        
 
     </footer>
 
     <script src="script.js"></script>
+
+    <div id="loadingOverlay" style="display: none;">
+        <div class="loading-modal">
+            <div class="spinner"></div>
+            <p>Download wird vorbereitet...</p>
+            <p>Bitte warten.</p>
+        </div>
+    </div>
 
 </body>
 

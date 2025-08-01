@@ -1,6 +1,22 @@
 // Globale Variable, um die Daten des Wählerverzeichnisses zu speichern
 let voterData = [];
 
+// Event Listener für Begrenzung auf Gremienwahl
+document.addEventListener("DOMContentLoaded", function() {
+    const selectWahl = document.getElementById("wahl");
+    const defaultOptionValue = "gremienwahl";
+
+    selectWahl.addEventListener("change", function(event) {
+        if (this.value !== defaultOptionValue) {
+            // Meldung anzeigen
+            alert("Diese Option ist noch nicht verfügbar.");
+
+            // Die Auswahl auf die erste Option zurücksetzen
+            this.value = defaultOptionValue;
+        }
+    });
+});
+// Event Listener für die WVZ-Erstellung
 document.getElementById('voterForm').addEventListener('submit', function(event) {
     event.preventDefault();
 
@@ -41,10 +57,26 @@ document.getElementById('voterForm').addEventListener('submit', function(event) 
 
         // Speichern der geladenen Daten in der globalen Variable
         voterData = data; 
+        const stichtag = document.getElementById('stichtag').value;
+        const wahl = document.getElementById('wahl').value;
 
-        // Darstellung der JSON (bleibt unverändert)
+        // Funktion zur Umwandlung des Datumsformats YYYY-MM-DD zu DD.MM.YYYY für die Anzeige
+        const formatStichtag = (dateString) => {
+            const [year, month, day] = dateString.split('-');
+            return `${day}.${month}.${year}`;
+        };
+
+        // Darstellung der JSON 
         if (voterData.length > 0) {
-            let tableHtml = '<h2>Wählerverzeichnis</h2><table><thead><tr>';
+
+            // Wandle den Wert der Wahl (z.B. "gremienwahl") in einen lesbaren Text um
+            const wahlText = {
+                "gremienwahl": "Gremienwahl",
+                "studierendenwahl": "Studierendenwahl",
+                "personalratswahl": "Personalratswahl"
+            }[wahl] || wahl; // Fallback, falls der Wert nicht in der Liste ist
+
+            let tableHtml = `<h2>Wählerverzeichnis ${wahlText} (${formatStichtag(stichtag)})</h2><table><thead><tr>`;
             
             Object.keys(voterData[0]).forEach(key => {
                 tableHtml += `<th>${key}</th>`;
@@ -75,12 +107,10 @@ document.getElementById('voterForm').addEventListener('submit', function(event) 
     });
 });
 
-
-// Neuer Event Listener für den Download-Button
+// Event Listener für den Excel-Download
 document.getElementById('downloadButton').addEventListener('click', function(event) {
     event.preventDefault();
 
-    // Überprüfen, ob Daten vorhanden sind
     if (voterData.length === 0) {
         alert('Bitte generieren Sie zuerst das Wählerverzeichnis mit "Erstellen", bevor Sie es herunterladen.');
         return;
@@ -93,42 +123,52 @@ document.getElementById('downloadButton').addEventListener('click', function(eve
         alert('Stichtag oder Wahl fehlen im Formular. Bitte überprüfen Sie die Eingaben.');
         return;
     }
+    
+    // Pop-up anzeigen
+    const loadingOverlay = document.getElementById('loadingOverlay');
+    loadingOverlay.style.display = 'flex';
 
-    // Erstelle ein FormData-Objekt, um die Daten per POST zu senden
+    // Button deaktivieren
+    document.getElementById('downloadButton').disabled = true;
+
     const downloadFormData = new FormData();
-    downloadFormData.append('stichtag', stichtag); // Weiterhin Stichtag und Wahl senden
+    downloadFormData.append('stichtag', stichtag);
     downloadFormData.append('wahl', wahl);
-    // Hänge das gesamte Wählerverzeichnis als JSON-String an
     downloadFormData.append('voter_data_json', JSON.stringify(voterData)); 
 
-    // Sende die Daten per POST an die download_excel.php
     fetch('Abfragen/download_excel.php', {
         method: 'POST',
         body: downloadFormData
     })
     .then(response => {
-        // Prüfen, ob der Server eine Datei zurückgibt
         if (!response.ok) {
-            // Wenn der Server einen Fehler-Header (z.B. 500) oder keinen Blob sendet
-            return response.text().then(text => { // Versuche, den Fehlertext zu lesen
+            return response.text().then(text => {
                 throw new Error('Fehler beim Herunterladen der Excel-Datei: ' + text);
             });
         }
-        return response.blob(); // Erwarte eine Binärdatei (Blob)
+        return response.blob();
     })
     .then(blob => {
-        // Erstelle eine temporäre URL für den Blob
+        // Pop-up ausblenden
+        loadingOverlay.style.display = 'none';
+        // Button wieder aktivieren
+        document.getElementById('downloadButton').disabled = false;
+
         const url = window.URL.createObjectURL(blob);
         const a = document.createElement('a');
         a.href = url;
-        // Setze den Dateinamen für den Download
         a.download = `Waehlerverzeichnis_${wahl}_${stichtag}.xlsx`; 
         document.body.appendChild(a);
-        a.click(); // Simuliere einen Klick, um den Download zu starten
-        a.remove(); // Entferne das temporäre Element
-        window.URL.revokeObjectURL(url); // Gib den Speicher frei
+        a.click();
+        a.remove();
+        window.URL.revokeObjectURL(url);
     })
     .catch(error => {
+        // Pop-up ausblenden
+        loadingOverlay.style.display = 'none';
+        // Button wieder aktivieren
+        document.getElementById('downloadButton').disabled = false;
+
         console.error('Download error:', error);
         alert('Ein Fehler ist beim Herunterladen aufgetreten: ' + error.message);
     });
