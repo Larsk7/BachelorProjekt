@@ -163,10 +163,14 @@ $dataWvzStFEcum2020 = wvz_st_f_ecum_2020(
 // überflüssig, da diese Abfrage nur eine neue Tabelle anlegt und nach Nachname sortiert (ist schon danach sortiert)
 
 // --- 11 --- liefert fin_wvz_promprob
-$fin_wvz_promprob = fin_wvz_promprob($dataWvzStFEcum2020);
+$fin_wvz_promprob = fin_wvz_promprob(
+    $dataWvzStFEcum2020);
 
 // --- 12 --- liefert fin_wvz_promprob_akad
-$fin_wvz_promprob_akad = fin_wvz_promprob_akad($dataWvzStFEcum2020, $fin_wvz_promprob);
+$fin_wvz_promprob_akad = fin_wvz_promprob_akad(
+    $dataWvzStFEcum2020, 
+    $fin_wvz_promprob
+);
 
 // --- 13 --- liefert fin_wvz_promZdel
 $fin_wvz_promZdel = fin_wvz_promZdel(
@@ -175,10 +179,12 @@ $fin_wvz_promZdel = fin_wvz_promZdel(
 );
 
 // -- 14 --- liefert FachschaftLückenFürPromovierendeFüllen
-$FSLueckFuerPromFuell = updateFakultaetPromovierende($fin_wvz_promZdel);
+$FSLueckFuerPromFuell = updateFakultaetPromovierende(
+    $fin_wvz_promZdel);
 
 // --- 15 --- liefert Fin_WVZ
-$finalesWaehlerverzeichnis = fin_wvz($FSLueckFuerPromFuell);
+$finalesWaehlerverzeichnis = fin_wvz(
+    $FSLueckFuerPromFuell);
 
 // Output
 $buffered_output = ob_get_clean();
