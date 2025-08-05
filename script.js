@@ -23,8 +23,11 @@ document.getElementById('voterForm').addEventListener('submit', function(event) 
     const stichtag = document.getElementById('stichtag').value;
     const wahl = document.getElementById('wahl').value;
     const resultsDiv = document.getElementById('voterResults');
+    const loadingOverlay = document.getElementById('loadingOverlayErstellen');
 
-    resultsDiv.innerHTML = '<p>Lade Wählerverzeichnis...</p>'; 
+    // Zeige das Lade-Overlay an
+    loadingOverlay.style.display = 'flex';
+    
     // Button deaktivieren, um Mehrfachklicks während des Ladens zu verhindern
     document.getElementById('createButton').disabled = true;
     document.getElementById('downloadButton').disabled = true;
@@ -45,6 +48,9 @@ document.getElementById('voterForm').addEventListener('submit', function(event) 
         return response.json(); 
     })
     .then(data => {
+        // Lade-Overlay ausblenden
+        loadingOverlay.style.display = 'none';
+
         // Buttons wieder aktivieren
         document.getElementById('createButton').disabled = false;
         document.getElementById('downloadButton').disabled = false;
@@ -66,9 +72,25 @@ document.getElementById('voterForm').addEventListener('submit', function(event) 
             return `${day}.${month}.${year}`;
         };
 
+        // NEU: Zuordnung der Spaltennamen für die Anzeige
+        const columnNameMap = {
+            'personid': 'Person_ID',
+            'ecumnr': 'Ecum_Nr',
+            'matrikelnr': 'Matrikelnummer',
+            'vorname': 'Vorname',
+            'nachname': 'Nachname',
+            'wählendengruppe': 'Wählendengruppe',
+            'fakultät': 'Fakultät',
+            'fachschaft': 'Fachschaft',
+            'LetzterWertvoncourse_of_study_longtext': 'Course of Study',
+            'username': 'Username',
+            'enrollmentdate': 'Einschreibungsdatum',
+            'disenrollment_date': 'Abmeldungsdatum' 
+        };
+
         // Darstellung der JSON 
         if (voterData.length > 0) {
-
+            
             // Wandle den Wert der Wahl (z.B. "gremienwahl") in einen lesbaren Text um
             const wahlText = {
                 "gremienwahl": "Gremienwahl",
@@ -78,15 +100,26 @@ document.getElementById('voterForm').addEventListener('submit', function(event) 
 
             let tableHtml = `<h2>Wählerverzeichnis ${wahlText} (${formatStichtag(stichtag)})</h2><table><thead><tr>`;
             
-            Object.keys(voterData[0]).forEach(key => {
-                tableHtml += `<th>${key}</th>`;
+            const columnKeys = Object.keys(voterData[0]); // Speichere die Schlüssel, um Konsistenz zu gewährleisten
+            
+            // Erstelle Header mit den umbenannten Spaltennamen
+            columnKeys.forEach(key => {
+                const headerText = columnNameMap[key] || key; // Nutze den neuen Namen, wenn vorhanden, sonst den Originalnamen
+                tableHtml += `<th>${headerText}</th>`;
             });
             tableHtml += '</tr></thead><tbody>';
 
+            // Fülle die Datenzeilen
             voterData.forEach(row => {
                 tableHtml += '<tr>';
-                Object.values(row).forEach(value => {
-                    tableHtml += `<td>${value}</td>`;
+                // Iteriere über die gespeicherten Schlüssel, um die Zellen in der richtigen Reihenfolge zu erstellen
+                columnKeys.forEach(key => {
+                    let cellValue = row[key];
+                    // Behandlung von null oder undefined, um "null" oder "undefined" nicht direkt anzuzeigen
+                    if (cellValue === null || typeof cellValue === 'undefined') {
+                        cellValue = ''; // Leerer String für leere Zellen
+                    }
+                    tableHtml += `<td>${cellValue}</td>`;
                 });
                 tableHtml += '</tr>';
             });
@@ -97,6 +130,9 @@ document.getElementById('voterForm').addEventListener('submit', function(event) 
         }
     })
     .catch(error => {
+        // Lade-Overlay ausblenden
+        loadingOverlay.style.display = 'none';
+
         // Buttons wieder aktivieren
         document.getElementById('createButton').disabled = false;
         document.getElementById('downloadButton').disabled = false;
@@ -125,7 +161,7 @@ document.getElementById('downloadButton').addEventListener('click', function(eve
     }
     
     // Pop-up anzeigen
-    const loadingOverlay = document.getElementById('loadingOverlay');
+    const loadingOverlay = document.getElementById('loadingOverlayDownload');
     loadingOverlay.style.display = 'flex';
 
     // Button deaktivieren

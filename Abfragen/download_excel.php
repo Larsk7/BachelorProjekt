@@ -45,13 +45,42 @@ $spreadsheet = new Spreadsheet();
 $sheet = $spreadsheet->getActiveSheet();
 $sheet->setTitle('Wählerverzeichnis');
 
-if (!empty($finalesWaehlerverzeichnis)) {
-    // Add header row
-    $headerRow = array_keys($finalesWaehlerverzeichnis[0]);
-    $sheet->fromArray($headerRow, NULL, 'A1');
+// NEU: Spaltennamen-Mapping im PHP-Backend
+$columnNameMap = [
+    'personid' => 'Person_ID',
+    'ecumnr' => 'Ecum_Nr',
+    'matrikelnr' => 'Matrikelnummer',
+    'vorname' => 'Vorname',
+    'nachname' => 'Nachname',
+    'wählendengruppe' => 'Wählendengruppe',
+    'fakultät' => 'Fakultät',
+    'fachschaft' => 'Fachschaft',
+    'LetzterWertvoncourse_of_study_longtext' => 'Course of Study',
+    'username' => 'Username',
+    'enrollmentdate' => 'Einschreibungsdatum',
+    'disenrollment_date' => 'Abmeldungsdatum'
+];
 
-    // Add data rows
-    $sheet->fromArray($finalesWaehlerverzeichnis, NULL, 'A2');
+if (!empty($finalesWaehlerverzeichnis)) {
+    // 1. Spaltenüberschriften umbenennen
+    $headerRow = array_keys($finalesWaehlerverzeichnis[0]);
+    $renamedHeaders = [];
+    foreach ($headerRow as $key) {
+        $renamedHeaders[] = $columnNameMap[$key] ?? $key;
+    }
+    $sheet->fromArray([$renamedHeaders], NULL, 'A1');
+
+    // 2. Datenzeilen hinzufügen
+    // Wir iterieren über die Daten, um sie in der richtigen Reihenfolge und mit den richtigen Werten einzufügen
+    $dataToWrite = [];
+    foreach ($finalesWaehlerverzeichnis as $row) {
+        $rowData = [];
+        foreach ($headerRow as $key) { // Nutze die Original-Schlüssel, um die Reihenfolge zu garantieren
+            $rowData[] = $row[$key] ?? ''; // Füge den Wert oder einen leeren String hinzu
+        }
+        $dataToWrite[] = $rowData;
+    }
+    $sheet->fromArray($dataToWrite, NULL, 'A2');
 
     // Optional: Auto-size columns for better readability
     foreach (range('A', $sheet->getHighestColumn()) as $col) {

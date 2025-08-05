@@ -1,6 +1,5 @@
 <!DOCTYPE html>
 <html lang="de">
-
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -66,12 +65,12 @@
                 </div>
             </form>
         </div>
-
-        <div id="voterResults" class="results-table">
-            <p>Bitte füllen Sie das Formular aus und klicken Sie auf "Erstellen", um das Wählerverzeichnis zu generieren.</p>
-        </div>
-
     </main>
+
+    
+    <div id="voterResults" class="results-table full-width-section">
+        <!--<p>Bitte füllen Sie das Formular aus und klicken Sie auf "Erstellen", um das Wählerverzeichnis zu generieren.</p> -->
+    </div>
 
     <footer class="main-footer">
         <div class="footer-layout">
@@ -86,23 +85,18 @@
                     <a href="https://portal2.uni-mannheim.de/portal2/pages/cs/sys/portal/utilities/signLanguageHelp.faces?" title="Gebärdensprache"><i class="fas fa-sign-language"></i></a>
                     <a href="https://portal2.uni-mannheim.de/portal2/pages/cs/sys/portal/sitemap/sitemap.faces" title="Struktur des Webangebots"><i class="fas fa-sitemap"></i></a>
                     <span>&copy; HISINONE EIN PRODUKT DER HIS EG</span>
-
-
+                </nav>
             </div>
         </div>
         <div class="footer-section footer-center">
-
             <span class="his-logo-text">HISinOne</span>
-
         </div>
-
         
-
     </footer>
 
     <script src="script.js"></script>
 
-    <div id="loadingOverlay" style="display: none;">
+    <div id="loadingOverlayDownload" style="display: none;">
         <div class="loading-modal">
             <div class="spinner"></div>
             <p>Download wird vorbereitet...</p>
@@ -110,6 +104,13 @@
         </div>
     </div>
 
-</body>
+    <div id="loadingOverlayErstellen" style="display: none;">
+        <div class="loading-modal">
+            <div class="spinner"></div>
+            <p>Wählerverzeichnis wird erstellt...</p>
+            <p>Bitte warten.</p>
+        </div>
+    </div>
 
+</body>
 </html>

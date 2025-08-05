@@ -85,9 +85,9 @@ body {
 /* 3. Hauptinhalt */
 main.container {
     padding-top: 20px;
-    padding-bottom: 40px;
-    /* HINZUGEFÜGT für Sticky Footer: Hauptinhalt füllt den Platz */
-    flex: 1;
+    padding-bottom: 20px;
+
+     flex: 1; 
 }
 
 .breadcrumb {
@@ -284,7 +284,19 @@ button[type="submit"]:hover {
     font-size: 0.9em;
     color: #888;
 }
-#loadingOverlay {
+#loadingOverlayErstellen {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background-color: rgba(0, 0, 0, 0.5); /* Semi-transparenter schwarzer Hintergrund */
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    z-index: 1000;
+}
+#loadingOverlayDownload {
     position: fixed;
     top: 0;
     left: 0;
@@ -326,3 +338,61 @@ button[type="submit"]:hover {
     color: #217346; /* Die offizielle Excel-Farbe 
 }
 */
+
+.full-width-section {
+    /* Setzt die Breite auf 100% der Viewport-Breite */
+    width: 100%;
+    /* Entfernt den automatischen Rand und platziert es ganz links */
+    margin-left: 0;
+    margin-right: 0;
+    /* Fügt einen Rand zur Seite hinzu, damit der Inhalt nicht direkt am Bildschirmrand klebt */
+    padding: 0 15px; /* Gleich wie der Container, nur ohne das Zentrieren */
+    box-sizing: border-box; /* Stellt sicher, dass das Padding die Breite nicht erhöht */
+}
+
+/* Du könntest auch die Tabelle selbst zentrieren, wenn das Ergebnis zu schmal ist */
+.results-table table {
+    margin: 0 auto;
+}
+
+/* Stile für die Ergebnistabelle */
+.results-table {
+    padding: 0px 0px;
+    margin: 0px 0px;
+}
+
+.results-table h2 {
+    text-align: left;
+    padding: 0px 0px;
+    margin: 0px 5px;
+    margin-bottom: 10px;
+    font-size: 1.5em;
+    font-weight: bold;
+    color: var(--uniMaBlue);
+}
+
+.results-table table {
+    width: 100%;
+    border-collapse: collapse; /* Macht die Rahmen durchgängig */
+    border: 1px solid #ccc; /* Fügt einen äußeren Rahmen hinzu */
+}
+
+.results-table th,
+.results-table td {
+    border: 1px solid #ccc; /* Fügt Rahmen zwischen den Zellen hinzu */
+    padding: 8px;
+    text-align: left;
+}
+
+.results-table th {
+    background-color: #ddd; /* Grauer Hintergrund für Header */
+    font-weight: bold;
+}
+
+.results-table tbody tr:nth-child(odd) {
+    background-color: #f9f9f9; /* Helleres Grau für ungerade Zeilen */
+}
+
+.results-table tbody tr:nth-child(even) {
+    background-color: #e6e6e6; /* Dunkleres Grau für gerade Zeilen */
+}
