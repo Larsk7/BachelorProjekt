@@ -68,6 +68,6 @@ function fin_wvz(array $inputData): array {
         return $cmp_vorname;
     });
     error_log("Phase 24: Finale Daten nach ORDER BY sortiert. Finale Zeilen: " . count($final_filtered_data));
-
+    
     return $final_filtered_data;
 }

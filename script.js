@@ -61,8 +61,10 @@ document.getElementById('voterForm').addEventListener('submit', function(event) 
             return;
         }
 
-        // Speichern der geladenen Daten in der globalen Variable
-        voterData = data; 
+        // Speichern der geladenen Daten in der globalen Variable (und Anzahl Datensätze)
+        voterData = data.wvz; 
+        const rowCount = data.rowCount;
+
         const stichtag = document.getElementById('stichtag').value;
         const wahl = document.getElementById('wahl').value;
 
@@ -98,7 +100,7 @@ document.getElementById('voterForm').addEventListener('submit', function(event) 
                 "personalratswahl": "Personalratswahl"
             }[wahl] || wahl; // Fallback, falls der Wert nicht in der Liste ist
 
-            let tableHtml = `<h2>Wählerverzeichnis ${wahlText} (${formatStichtag(stichtag)})</h2><table><thead><tr>`;
+            let tableHtml = `<h2>Wählerverzeichnis ${wahlText} (${formatStichtag(stichtag)}) - ${rowCount} Datensätze</h2><table><thead><tr>`;
             
             const columnKeys = Object.keys(voterData[0]); // Speichere die Schlüssel, um Konsistenz zu gewährleisten
             

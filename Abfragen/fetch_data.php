@@ -197,4 +197,10 @@ if (!empty($buffered_output)) {
     exit();
 }
 
-echo json_encode($finalesWaehlerverzeichnis);
+// Anzahl Datensätze ermitteln
+$row_count = count($finalesWaehlerverzeichnis);
+
+echo json_encode([
+    'wvz'     => $finalesWaehlerverzeichnis,
+    'rowCount' => $row_count
+]);

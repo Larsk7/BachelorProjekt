@@ -39,7 +39,7 @@
             <form id="voterForm">
                 <div class="form-group">
                     <label for="stichtag">Stichtag</label>
-                    <input type="date" id="stichtag" name="stichtag" min="2010-01-01" max="2025-08-01" required>
+                    <input type="date" id="stichtag" name="stichtag" min="2010-01-01" max="2025-09-01" required>
                 </div>
                 <div class="form-group">
                     <label for="wahl">Wahl</label>
