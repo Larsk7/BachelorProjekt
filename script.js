@@ -4,15 +4,15 @@ let voterData = [];
 // Event Listener für Begrenzung auf Gremienwahl
 document.addEventListener("DOMContentLoaded", function() {
     const selectWahl = document.getElementById("wahl");
-    const defaultOptionValue = "gremienwahl";
+    const defaultValue = "gremienwahl";
 
     selectWahl.addEventListener("change", function(event) {
-        if (this.value !== defaultOptionValue) {
+        if (this.value !== defaultValue) {
             // Meldung anzeigen
             alert("Diese Option ist noch nicht verfügbar.");
 
             // Die Auswahl auf die erste Option zurücksetzen
-            this.value = defaultOptionValue;
+            this.value = defaultValue;
         }
     });
 });
@@ -20,6 +20,7 @@ document.addEventListener("DOMContentLoaded", function() {
 document.getElementById('voterForm').addEventListener('submit', function(event) {
     event.preventDefault();
 
+    // Elemente aus dem Frontend laden
     const stichtag = document.getElementById('stichtag').value;
     const wahl = document.getElementById('wahl').value;
     const resultsDiv = document.getElementById('voterResults');
@@ -32,7 +33,7 @@ document.getElementById('voterForm').addEventListener('submit', function(event) 
     document.getElementById('createButton').disabled = true;
     document.getElementById('downloadButton').disabled = true;
 
-
+    // Formular Daten vorbereiten
     const formData = new FormData();
     formData.append('stichtag', stichtag);
     formData.append('wahl', wahl);
@@ -64,7 +65,6 @@ document.getElementById('voterForm').addEventListener('submit', function(event) 
         // Speichern der geladenen Daten in der globalen Variable (und Anzahl Datensätze)
         voterData = data.wvz; 
         const rowCount = data.rowCount;
-
         const stichtag = document.getElementById('stichtag').value;
         const wahl = document.getElementById('wahl').value;
 
@@ -74,7 +74,7 @@ document.getElementById('voterForm').addEventListener('submit', function(event) 
             return `${day}.${month}.${year}`;
         };
 
-        // NEU: Zuordnung der Spaltennamen für die Anzeige
+        // Zuordnung der Spaltennamen für die Anzeige
         const columnNameMap = {
             'personid': 'Person_ID',
             'ecumnr': 'Ecum_Nr',
@@ -93,20 +93,22 @@ document.getElementById('voterForm').addEventListener('submit', function(event) 
         // Darstellung der JSON 
         if (voterData.length > 0) {
             
-            // Wandle den Wert der Wahl (z.B. "gremienwahl") in einen lesbaren Text um
+            // Wahlart groß schreiben
             const wahlText = {
                 "gremienwahl": "Gremienwahl",
                 "studierendenwahl": "Studierendenwahl",
                 "personalratswahl": "Personalratswahl"
             }[wahl] || wahl; // Fallback, falls der Wert nicht in der Liste ist
 
+            // Überschrift der Tabelle (mit Wahlart, Stichtag und Anzahl Datensätze)
             let tableHtml = `<h2>Wählerverzeichnis ${wahlText} (${formatStichtag(stichtag)}) - ${rowCount} Datensätze</h2><table><thead><tr>`;
             
-            const columnKeys = Object.keys(voterData[0]); // Speichere die Schlüssel, um Konsistenz zu gewährleisten
+            // Speichere die Schlüssel, um Konsistenz zu gewährleisten
+            const columnKeys = Object.keys(voterData[0]); 
             
             // Erstelle Header mit den umbenannten Spaltennamen
             columnKeys.forEach(key => {
-                const headerText = columnNameMap[key] || key; // Nutze den neuen Namen, wenn vorhanden, sonst den Originalnamen
+                const headerText = columnNameMap[key] || key;
                 tableHtml += `<th>${headerText}</th>`;
             });
             tableHtml += '</tr></thead><tbody>';
@@ -154,6 +156,7 @@ document.getElementById('downloadButton').addEventListener('click', function(eve
         return;
     }
 
+    // Elemente aus dem Frontend laden
     const stichtag = document.getElementById('stichtag').value;
     const wahl = document.getElementById('wahl').value;
 
@@ -169,6 +172,7 @@ document.getElementById('downloadButton').addEventListener('click', function(eve
     // Button deaktivieren
     document.getElementById('downloadButton').disabled = true;
 
+    // Formular Daten vorbereiten
     const downloadFormData = new FormData();
     downloadFormData.append('stichtag', stichtag);
     downloadFormData.append('wahl', wahl);
@@ -192,6 +196,7 @@ document.getElementById('downloadButton').addEventListener('click', function(eve
         // Button wieder aktivieren
         document.getElementById('downloadButton').disabled = false;
 
+        // Excel-Download vorbereiten
         const url = window.URL.createObjectURL(blob);
         const a = document.createElement('a');
         a.href = url;

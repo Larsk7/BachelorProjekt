@@ -1,9 +1,10 @@
 <?php
 
-function aggregateAndFilterLehrDisDt(array $inputData): array {
-    $groupedIntermediateData = [];
+function aggregateAndFilterLehrDisDt(array $dataPhase5_1lehr): array {
+    $groupedData = [];
 
-    foreach ($inputData as $row) {
+    // Group-by Klausel
+    foreach ($dataPhase5_1lehr as $row) {
         $group_key = implode('||', [
             (string)($row['person_id'] ?? ''),
             (string)($row['registrationnumber_final'] ?? ''), 
@@ -13,8 +14,8 @@ function aggregateAndFilterLehrDisDt(array $inputData): array {
             (string)($row['student'] ?? '')
         ]);
 
-        if (!isset($groupedIntermediateData[$group_key])) {
-            $groupedIntermediateData[$group_key] = [
+        if (!isset($groupedData[$group_key])) {
+            $groupedData[$group_key] = [
                 'person_id' => $row['person_id'] ?? null,
                 'registrationnumber' => $row['registrationnumber_final'] ?? null, 
                 'firstname' => $row['firstname'] ?? null,
@@ -28,18 +29,18 @@ function aggregateAndFilterLehrDisDt(array $inputData): array {
                 'proz' => (float)($row['proz'] ?? 0)           
             ];
         } else {
-            $groupedIntermediateData[$group_key]['proz'] += (float)($row['proz'] ?? 0);
+            $groupedData[$group_key]['proz'] += (float)($row['proz'] ?? 0);
         }
     }
 
     // --- HAVING-Klausel anwenden ---
-    $filteredAggregatedData = [];
-    foreach ($groupedIntermediateData as $row) {
+    $filteredData = [];
+    foreach ($groupedData as $row) {
         $sum_proz = (float)($row['proz'] ?? 0); 
         $pbu_art_first = (string)($row['pbu_art'] ?? ''); 
 
         if ($sum_proz > 25 || $pbu_art_first == '78') {
-            $filteredAggregatedData[] = [
+            $filteredData[] = [
                 'person_id' => $row['person_id'],
                 'registrationnumber' => $row['registrationnumber'],
                 'firstname' => $row['firstname'],
@@ -53,20 +54,21 @@ function aggregateAndFilterLehrDisDt(array $inputData): array {
         }
     }
 
-    error_log("Nach Phase 6 (Aggregation und HAVING Lehr). Anzahl Zeilen: " . count($filteredAggregatedData));
-    return $filteredAggregatedData;
+    error_log("Nach Phase 6 (Aggregation und HAVING Lehr). Anzahl Zeilen: " . count($filteredData));
+    return $filteredData;
 }
 
-function SelectLehrDisDt(array $data): array {
-    $finalOutput = [];
+function SelectLehrDisDt(array $dataPhase5_2lehr): array {
+    $resultData = [];
 
-    foreach ($data as $p) { 
+    // Select
+    foreach ($dataPhase5_2lehr as $p) { 
         $passiv_value = null;
         if (($p['proz'] ?? 0) >= 50 || ($p['pbu_art'] ?? '') == '78') {
             $passiv_value = 1;
         }
 
-        $finalOutput[] = [
+        $resultData[] = [
             'person_id' => $p['person_id'] ?? null,
             'registrationnumber' => $p['registrationnumber'] ?? null,
             'firstname' => $p['firstname'] ?? null,
@@ -77,6 +79,6 @@ function SelectLehrDisDt(array $data): array {
             'passiv' => $passiv_value 
         ];
     }
-    error_log("Nach Phase 7 (Finale Transformation). Anzahl Zeilen: " . count($finalOutput));
-    return $finalOutput;
+    error_log("Nach Phase 7 (Finale Transformation). Anzahl Zeilen: " . count($resultData));
+    return $resultData;
 }

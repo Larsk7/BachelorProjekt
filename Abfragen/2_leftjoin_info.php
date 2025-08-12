@@ -1,24 +1,24 @@
 <?php
 
 function leftjoin_info(
-    array $combinedHisrmPortalData,
+    array $dataPhase1,
     string $stichtag,
-    array $infoAbteilungenTable,
+    array $infoAbtTable,
     array $pbvLookupData,
     array $pblLookupData,
     array $pbuLookupData
 ): array {
-    $infoAbteilungenMap = create_lookup_map($infoAbteilungenTable, 'Kennung');
-    error_log("Info Abteilungen Lookup erstellt mit " . count($infoAbteilungenMap) . " Einträgen.");
+    $infoAbtMap = create_lookup_map($infoAbtTable, 'Kennung');
+    error_log("Info Abteilungen Lookup erstellt mit " . count($infoAbtMap) . " Einträgen.");
 
-    $finalTransformedDataPhase2 = [];
+    $resultData = [];
 
-    foreach ($combinedHisrmPortalData as $mitarbeitende) {
+    foreach ($dataPhase1 as $mitarbeitende) {
         $processedRow = $mitarbeitende;
 
         // LEFT JOIN info_abteilungen
         $bereich_kennung = $processedRow['bereich_kennung'] ?? null;
-        $abteilung_info = $infoAbteilungenMap[$bereich_kennung] ?? null;
+        $abteilung_info = $infoAbtMap[$bereich_kennung] ?? null;
 
         if ($abteilung_info) {
             $processedRow['abteilungs_name'] = $abteilung_info['name'] ?? null;
@@ -73,8 +73,8 @@ function leftjoin_info(
         // 6. final_abteilung_id (aus GetParentAbt)
         $processedRow['final_abteilung_id'] = php_GetParentAbt($processedRow['institut'] ?? null);
 
-        $finalTransformedDataPhase2[] = $processedRow;
+        $resultData[] = $processedRow;
     }
-    error_log("Nach Phase 2 (Join info_abteilungen & Zeilen-Transformationen). Anzahl Zeilen: " . count($finalTransformedDataPhase2));
-    return $finalTransformedDataPhase2;
+    error_log("Nach Phase 2 (Join info_abteilungen & Zeilen-Transformationen). Anzahl Zeilen: " . count($resultData));
+    return $resultData;
 }

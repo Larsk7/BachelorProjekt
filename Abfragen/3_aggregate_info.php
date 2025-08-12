@@ -1,9 +1,9 @@
 <?php
 
-function aggregate_info(array $transformedDataPhase2): array {
-    $groupedFinalData = [];
+function aggregate_info(array $dataPhase2): array {
+    $groupedData = [];
 
-    foreach ($transformedDataPhase2 as $row) {
+    foreach ($dataPhase2 as $row) {
         // Definieren des Group By Schlüssels - alle Nicht-Aggregat-Spalten
         $group_key = implode('||', [
             (string)($row['person_id'] ?? ''),
@@ -27,28 +27,29 @@ function aggregate_info(array $transformedDataPhase2): array {
             (string)($row['adbz'] ?? '')
         ]);
 
-        if (!isset($groupedFinalData[$group_key])) {
-            $groupedFinalData[$group_key] = $row;
+        if (!isset($groupedData[$group_key])) {
+            $groupedData[$group_key] = $row;
             // Initialisiere Aggregationsfelder
-            $groupedFinalData[$group_key]['institut'] = $row['institut'] ?? null;
-            $groupedFinalData[$group_key]['abteilung'] = $row['abteilungs_name'] ?? null;
+            $groupedData[$group_key]['institut'] = $row['institut'] ?? null;
+            $groupedData[$group_key]['abteilung'] = $row['abteilungs_name'] ?? null;
         } else {
             // Aggregation: Finde das Minimum für 'institut'
             if (($row['institut'] ?? null) !== null) {
-                if ($groupedFinalData[$group_key]['institut'] === null || (string)($row['institut']) < (string)($groupedFinalData[$group_key]['institut'])) {
-                    $groupedFinalData[$group_key]['institut'] = $row['institut'];
+                if ($groupedData[$group_key]['institut'] === null || (string)($row['institut']) < (string)($groupedData[$group_key]['institut'])) {
+                    $groupedData[$group_key]['institut'] = $row['institut'];
                 }
             }
             // Aggregation: Finde das Minimum für 'abteilung'
             if (($row['abteilungs_name'] ?? null) !== null) {
-                if ($groupedFinalData[$group_key]['abteilung'] === null || (string)($row['abteilungs_name']) < (string)($groupedFinalData[$group_key]['abteilung'])) {
-                    $groupedFinalData[$group_key]['abteilung'] = $row['abteilungs_name'];
+                if ($groupedData[$group_key]['abteilung'] === null || (string)($row['abteilungs_name']) < (string)($groupedData[$group_key]['abteilung'])) {
+                    $groupedData[$group_key]['abteilung'] = $row['abteilungs_name'];
                 }
             }
         }
     }
 
-    $finalOutputData = array_values($groupedFinalData);
-    error_log("Endgültiges Endergebnis nach Aggregation. Anzahl Zeilen: " . count($finalOutputData));
-    return $finalOutputData;
+    // Ergebnis transformieren
+    $resultData = array_values($groupedData);
+    error_log("Endgültiges Endergebnis nach Aggregation. Anzahl Zeilen: " . count($resultData));
+    return $resultData;
 }

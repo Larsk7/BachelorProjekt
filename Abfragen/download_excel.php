@@ -24,7 +24,7 @@ if (!$stichtag || !$wahl || !$voterDataJson) {
 }
 
 // Decode the JSON data received from JavaScript
-$finalesWaehlerverzeichnis = json_decode($voterDataJson, true); // true for associative array
+$wvzData = json_decode($voterDataJson, true); // true for associative array
 
 if (json_last_error() !== JSON_ERROR_NONE) {
     ob_clean();
@@ -34,8 +34,8 @@ if (json_last_error() !== JSON_ERROR_NONE) {
 }
 
 // Ensure it's an array, even if empty
-if (!is_array($finalesWaehlerverzeichnis)) {
-    $finalesWaehlerverzeichnis = [];
+if (!is_array($wvzData)) {
+    $wvzData = [];
 }
 
 
@@ -61,9 +61,9 @@ $columnNameMap = [
     'disenrollment_date' => 'Abmeldungsdatum'
 ];
 
-if (!empty($finalesWaehlerverzeichnis)) {
+if (!empty($wvzData)) {
     // 1. Spaltenüberschriften umbenennen
-    $headerRow = array_keys($finalesWaehlerverzeichnis[0]);
+    $headerRow = array_keys($wvzData[0]);
     $renamedHeaders = [];
     foreach ($headerRow as $key) {
         $renamedHeaders[] = $columnNameMap[$key] ?? $key;
@@ -73,7 +73,7 @@ if (!empty($finalesWaehlerverzeichnis)) {
     // 2. Datenzeilen hinzufügen
     // Wir iterieren über die Daten, um sie in der richtigen Reihenfolge und mit den richtigen Werten einzufügen
     $dataToWrite = [];
-    foreach ($finalesWaehlerverzeichnis as $row) {
+    foreach ($wvzData as $row) {
         $rowData = [];
         foreach ($headerRow as $key) { // Nutze die Original-Schlüssel, um die Reihenfolge zu garantieren
             $rowData[] = $row[$key] ?? ''; // Füge den Wert oder einen leeren String hinzu

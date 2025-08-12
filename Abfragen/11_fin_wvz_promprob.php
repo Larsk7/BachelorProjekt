@@ -1,48 +1,47 @@
 <?php
 
-function fin_wvz_promprob(array $inputData): array {
-    $pre_filtered_data = [];
-    $target_groups = ["Promovierende", "Akademische Mitarbeitende"];
+function fin_wvz_promprob(array $dataPhase9): array {
+    $data = [];
+    $groups = ["Promovierende", "Akademische Mitarbeitende"];
 
     // --- WHERE-Klausel (Filterung vor Gruppierung) ---
     // WHERE (((wählendenverzeichnis.wählendengruppe) In ("Promovierende","Akademische Mitarbeitende")))
-    foreach ($inputData as $row) {
-        $waehlendengruppe = $row['wählendengruppe'] ?? null;
-        if (in_array($waehlendengruppe, $target_groups)) {
-            $pre_filtered_data[] = $row;
+    foreach ($dataPhase9 as $row) {
+        $wählGr = $row['wählendengruppe'] ?? null;
+        if (in_array($wählGr, $groups)) {
+            $data[] = $row;
         }
     }
-    error_log("Phase 20: Daten nach WHERE-Filterung. Anzahl Zeilen: " . count($pre_filtered_data));
-
+    error_log("Phase 20: Daten nach WHERE-Filterung. Anzahl Zeilen: " . count($data));
 
     // --- GROUP BY wählendenverzeichnis.personid ---
     // und Count(wählendenverzeichnis.wählendengruppe) AS Anzahlvonwählendengruppe
-    $grouped_counts = [];
-    foreach ($pre_filtered_data as $row) {
+    $groupedCounts = [];
+    foreach ($data as $row) {
         $personid = $row['personid'] ?? null;
         if ($personid !== null) {
-            if (!isset($grouped_counts[$personid])) {
+            if (!isset($groupedCounts[$personid])) {
                 // Erste Instanz für diese personid
-                $grouped_counts[$personid] = [
+                $groupedCounts[$personid] = [
                     'personid' => $personid,
                     'Anzahlvonwählendengruppe' => 0 // Initialisiere Zähler
                 ];
             }
-            $grouped_counts[$personid]['Anzahlvonwählendengruppe']++; // Inkrementiere Zähler
+            $groupedCounts[$personid]['Anzahlvonwählendengruppe']++; // Inkrementiere Zähler
         }
     }
-    error_log("Phase 20: Daten nach GROUP BY aggregiert. Anzahl Gruppen: " . count($grouped_counts));
+    error_log("Phase 20: Daten nach GROUP BY aggregiert. Anzahl Gruppen: " . count($groupedCounts));
 
 
     // --- HAVING-Klausel anwenden ---
     // HAVING (((Count(wählendenverzeichnis.wählendengruppe))>1));
-    $final_filtered_groups = [];
-    foreach ($grouped_counts as $person_data) {
+    $resultData = [];
+    foreach ($groupedCounts as $person_data) {
         if (($person_data['Anzahlvonwählendengruppe'] ?? 0) > 1) {
-            $final_filtered_groups[] = $person_data;
+            $resultData[] = $person_data;
         }
     }
-    error_log("Phase 20: Finale Daten nach HAVING gefiltert. Anzahl Zeilen: " . count($final_filtered_groups));
+    error_log("Phase 20: Finale Daten nach HAVING gefiltert. Anzahl Zeilen: " . count($resultData));
 
-    return $final_filtered_groups;
+    return $resultData;
 }

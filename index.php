@@ -68,9 +68,7 @@
     </main>
 
     
-    <div id="voterResults" class="results-table full-width-section">
-        <!--<p>Bitte füllen Sie das Formular aus und klicken Sie auf "Erstellen", um das Wählerverzeichnis zu generieren.</p> -->
-    </div>
+    <div id="voterResults" class="results-table full-width-section"></div>
 
     <footer class="main-footer">
         <div class="footer-layout">
@@ -91,7 +89,6 @@
         <div class="footer-section footer-center">
             <span class="his-logo-text">HISinOne</span>
         </div>
-        
     </footer>
 
     <script src="script.js"></script>

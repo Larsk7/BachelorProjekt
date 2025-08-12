@@ -22,8 +22,8 @@ function loadAllRawData(array $dbConfigHisrm, array $dbConfigPortal, string $sti
         $rawData['pbl_lookup_data'] = $pdoHisrm->query("SELECT pbl_pgd_join_id, pbl_pbv_nr, pbl_adt_bez, pbl_von, pbl_bis, pbl_status FROM sva4.pbl;")->fetchAll(PDO::FETCH_ASSOC);
         $rawData['pbu_lookup_data'] = $pdoHisrm->query("SELECT pbu_pgd_join_id, pbu_von, pbu_bis, pbu_status, pbu_art FROM sva4.pbu;")->fetchAll(PDO::FETCH_ASSOC);
 
-        $sva4_inst_data = $pdoHisrm->query("SELECT inst_nr, uebinst_nr FROM sva4.inst;")->fetchAll(PDO::FETCH_ASSOC);
-        foreach ($sva4_inst_data as $inst_row) {
+        $sva4InstData = $pdoHisrm->query("SELECT inst_nr, uebinst_nr FROM sva4.inst;")->fetchAll(PDO::FETCH_ASSOC);
+        foreach ($sva4InstData as $inst_row) {
             $sva4_inst_lookup_map[(string)$inst_row['inst_nr']] = $inst_row;
         }
         error_log("sva4.inst Lookup Map erstellt mit " . count($sva4_inst_lookup_map) . " Einträgen.");

@@ -1,10 +1,13 @@
 <?php
 
 function combineHisrmPortalData(array $hisrmData, array $portalData): array {
-    $combinedData = [];
+    
+    // Arrays zur Datenspeicherung der Abfragen
+    $resultData = [];
     $portalLookup = [];
-    $seenCombinations = [];
+    $seenCombs = [];
 
+    // Portal-Daten füllen
     foreach ($portalData as $p_row) {
         if (isset($p_row['personalnr'])) {
             $portalLookup[(string)$p_row['personalnr']] = $p_row;
@@ -12,24 +15,27 @@ function combineHisrmPortalData(array $hisrmData, array $portalData): array {
     }
     error_log("Portal-Lookup erstellt mit " . count($portalLookup) . " Einträgen für PHP-Join.");
 
+    // Iteration über hisrm-Daten
     foreach ($hisrmData as $h_row) {
-        $hisrmJoinKey = (string)($h_row['hisrm_join_key_id'] ?? null);
+        $hisrmKey = (string)($h_row['hisrm_join_key_id'] ?? null);
 
-        if ($hisrmJoinKey !== null && isset($portalLookup[$hisrmJoinKey])) {
-            $matchedPortalRow = $portalLookup[$hisrmJoinKey];
+        // Join
+        if ($hisrmKey !== null && isset($portalLookup[$hisrmKey])) {
+            $matchedPortalRow = $portalLookup[$hisrmKey];
 
-            $currentPersonalnr = (string)($matchedPortalRow['personalnr'] ?? null);
+            $currentPersNr = (string)($matchedPortalRow['personalnr'] ?? null);
             $currentPbvNr = (string)($h_row['pbv_nr'] ?? null);
 
-            $compositeDistinctKey = $currentPersonalnr . '_' . $currentPbvNr;
+            $compositeDisKey = $currentPersNr . '_' . $currentPbvNr;
 
-            if (!isset($seenCombinations[$compositeDistinctKey])) {
-                $combinedData[] = [
+            // Select
+            if (!isset($seenCombs[$compositeDisKey])) {
+                $resultData[] = [
                     'person_id' => $matchedPortalRow['person_id'] ?? null,
                     'firstname' => $matchedPortalRow['firstname'] ?? null,
                     'surname' => $matchedPortalRow['surname'] ?? null,
                     'birthdate' => $matchedPortalRow['birthdate'] ?? null,
-                    'personalnr' => $currentPersonalnr,
+                    'personalnr' => $currentPersNr,
                     'registrationnumber' => $matchedPortalRow['registrationnumber'] ?? null,
                     'student' => $matchedPortalRow['student'] ?? null,
 
@@ -45,18 +51,17 @@ function combineHisrmPortalData(array $hisrmData, array $portalData): array {
                     'institut' => $h_row['institut'] ?? null,
                     'bereich_kennung' => $h_row['bereich_kennung'] ?? null,
 
-                    'Quelle' => 'Kombiniert'
                 ];
-                $seenCombinations[$compositeDistinctKey] = true;
+                $seenCombs[$compositeDisKey] = true;
 
-                error_log("PHP-Match gefunden & Hinzugefügt (DISTINCT auf personalnr, pbv_nr): HISRM Schlüssel=" . $hisrmJoinKey . " mit PORTAL PersonalNr=" . $hisrmJoinKey);
+                error_log("PHP-Match gefunden & Hinzugefügt (DISTINCT auf personalnr, pbv_nr): HISRM Schlüssel=" . $hisrmKey . " mit PORTAL PersonalNr=" . $hisrmKey);
             } else {
-                error_log("PHP-Match gefunden, aber Kombination (personalnr: " . $currentPersonalnr . ", pbv_nr: " . $currentPbvNr . ") ist bereits in der Liste (DISTINCT).");
+                error_log("PHP-Match gefunden, aber Kombination (personalnr: " . $currentPersNr . ", pbv_nr: " . $currentPbvNr . ") ist bereits in der Liste (DISTINCT).");
             }
         } else {
-            error_log("Kein PHP-Match für HISRM Schlüssel=" . ($hisrmJoinKey ?? 'NULL') . " in Portal-Daten gefunden.");
+            error_log("Kein PHP-Match für HISRM Schlüssel=" . ($hisrmKey ?? 'NULL') . " in Portal-Daten gefunden.");
         }
     }
-    error_log("Kombinierte Daten (nach HISRM-PORTAL-Join & Distinct) Anzahl Zeilen: " . count($combinedData));
-    return $combinedData;
+    error_log("Kombinierte Daten (nach HISRM-PORTAL-Join & Distinct) Anzahl Zeilen: " . count($resultData));
+    return $resultData;
 }

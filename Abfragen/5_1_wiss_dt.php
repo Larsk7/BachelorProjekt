@@ -1,22 +1,23 @@
 <?php
 
-function filterWissDt(array $data): array {
-    $filteredData = [];
+function filterWissDt(array $dataPhase4): array {
+    $resultData = [];
 
-    $adbz_in_values = ['0060','0070','0072','0080','0090','0100','3472','3710','7090',];
+    // Array für 'IN'-Bedingung
+    $adbzIN = ['0060','0070','0072','0080','0090','0100','3472','3710','7090',];
 
     // --- Filterung (WHERE-Klausel) ---
-    foreach ($data as $row) {
+    foreach ($dataPhase4 as $row) {
         $adbz = (string)($row['adbz'] ?? ''); 
 
-        if (in_array($adbz, $adbz_in_values)) {
-            $filteredData[] = $row;
+        if (in_array($adbz, $adbzIN)) {
+            $resultData[] = $row;
         }
     }
-    error_log("Nach Phase 5 (Filterung Wiss). Anzahl Zeilen: " . count($filteredData));
+    error_log("Nach Phase 5 (Filterung Wiss). Anzahl Zeilen: " . count($resultData));
 
     // --- Sortierung (ORDER BY-Klausel) ---
-    usort($filteredData, function($a, $b) {
+    usort($resultData, function($a, $b) {
         // pbv_monate DESC
         $cmp_pbv_monate = ($b['pbv_monate'] ?? -PHP_INT_MAX) <=> ($a['pbv_monate'] ?? -PHP_INT_MAX);
         if ($cmp_pbv_monate !== 0) return $cmp_pbv_monate;
@@ -29,7 +30,7 @@ function filterWissDt(array $data): array {
         $cmp_pbv_sum = ($b['pbv_sum'] ?? -PHP_INT_MAX) <=> ($a['pbv_sum'] ?? -PHP_INT_MAX); 
         return $cmp_pbv_sum;
     });
-    error_log("Nach Phase 5 (Sortierung Wiss). Finale Zeilen: " . count($filteredData));
+    error_log("Nach Phase 5 (Sortierung Wiss). Finale Zeilen: " . count($resultData));
 
-    return $filteredData;
+    return $resultData;
 }

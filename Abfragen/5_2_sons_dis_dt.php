@@ -1,9 +1,9 @@
 <?php
 
-function SonsDisDt(array $inputData): array {
-    $groupedIntermediateData = [];
+function SonsDisDt(array $dataPhase5_1sons): array {
+    $groupedData = [];
 
-    foreach ($inputData as $row) {
+    foreach ($dataPhase5_1sons as $row) {
         // GROUP BY Schlüssel (wie in der Access-Abfrage angegeben)
         $group_key = implode('||', [
             (string)($row['person_id'] ?? ''),
@@ -14,8 +14,8 @@ function SonsDisDt(array $inputData): array {
             (string)($row['student'] ?? '')
            ]);
 
-        if (!isset($groupedIntermediateData[$group_key])) {
-            $groupedIntermediateData[$group_key] = [
+        if (!isset($groupedData[$group_key])) {
+            $groupedData[$group_key] = [
                 'person_id' => $row['person_id'] ?? null,
                 'registrationnumber' => $row['registrationnumber_final'] ?? null,
                 'firstname' => $row['firstname'] ?? null,
@@ -29,16 +29,16 @@ function SonsDisDt(array $inputData): array {
                 'count_proz_gt_25' => (($row['proz'] ?? 0) > 25 ? 1 : 0) 
             ];
         } else {
-            $groupedIntermediateData[$group_key]['sum_proz'] += (float)($row['proz'] ?? 0);
+            $groupedData[$group_key]['sum_proz'] += (float)($row['proz'] ?? 0);
             if (($row['proz'] ?? 0) > 25) {
-                $groupedIntermediateData[$group_key]['count_proz_gt_25'] += 1;
+                $groupedData[$group_key]['count_proz_gt_25'] += 1;
             }
         }
     }
 
     // --- HAVING-Klausel anwenden und 'passiv'-Spalte berechnen ---
-    $finalAggregatedOutput = [];
-    foreach ($groupedIntermediateData as $row) {
+    $resultData = [];
+    foreach ($groupedData as $row) {
         $sum_proz_gt_25 = $row['count_proz_gt_25']; 
 
         if ($sum_proz_gt_25 > 0) { 
@@ -48,7 +48,7 @@ function SonsDisDt(array $inputData): array {
             }
 
             // Select der Spalten für die finale Ausgabe
-            $finalAggregatedOutput[] = [
+            $resultData[] = [
                 'person_id' => $row['person_id'],
                 'registrationnumber' => $row['registrationnumber'],
                 'firstname' => $row['firstname'],
@@ -61,6 +61,6 @@ function SonsDisDt(array $inputData): array {
         }
     }
 
-    error_log("Nach Phase 10 (Sons(dis_dt) Aggregation, HAVING & Passiv-Berechnung). Anzahl Zeilen: " . count($finalAggregatedOutput));
-    return $finalAggregatedOutput;
+    error_log("Nach Phase 10 (Sons(dis_dt) Aggregation, HAVING & Passiv-Berechnung). Anzahl Zeilen: " . count($resultData));
+    return $resultData;
 }

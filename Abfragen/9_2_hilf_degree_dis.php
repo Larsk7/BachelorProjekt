@@ -1,19 +1,18 @@
 <?php
 
-function hilf_degree_dis(array $inputData): array {
-    $groupedIntermediateData = [];
+function hilf_degree_dis(array $dataPhase9_1): array {
+    $groupedData = [];
 
-    foreach ($inputData as $row) {
+    foreach ($dataPhase9_1 as $row) {
         // GROUP BY Schlüssel: id, degree_program_progress_startdate
-        // Annahme: diese Kombination ist einzigartig im Input nach Phase 16.
         $group_key = implode('||', [
             (string)($row['id'] ?? ''),
             (string)($row['degree_program_progress_startdate'] ?? '')
         ]);
 
-        if (!isset($groupedIntermediateData[$group_key])) {
+        if (!isset($groupedData[$group_key])) {
             // Erste Zeile für diese Gruppe: Initialisiere Aggregationen
-            $groupedIntermediateData[$group_key] = [
+            $groupedData[$group_key] = [
                 'id' => $row['id'] ?? null,
                 //'degree_program_progress_startdate' => $row['degree_program_progress_startdate'] ?? null,
                 'course_of_study_longtext_last' => $row['course_of_study_longtext'] ?? null
@@ -22,12 +21,11 @@ function hilf_degree_dis(array $inputData): array {
         }
     }
 
-    $final_output_pre_sort = array_values($groupedIntermediateData);
-    error_log("Phase 17: Daten nach GROUP BY aggregiert. Anzahl Gruppen: " . count($final_output_pre_sort));
-
+    $resultData = array_values($groupedData);
+    error_log("Phase 17: Daten nach GROUP BY aggregiert. Anzahl Gruppen: " . count($resultData));
 
     // --- ORDER BY Klausel ---
-    usort($final_output_pre_sort, function($a, $b) {
+    usort($resultData, function($a, $b) {
         // hilf_degree.id ASC
         $cmp_id = ($a['id'] ?? PHP_INT_MAX) <=> ($b['id'] ?? PHP_INT_MAX);
         if ($cmp_id !== 0) return $cmp_id;
@@ -49,7 +47,7 @@ function hilf_degree_dis(array $inputData): array {
         $cmp_longtext = ($a['course_of_study_longtext_last'] ?? '') <=> ($b['course_of_study_longtext_last'] ?? '');
         return $cmp_longtext;
     });
-    error_log("Phase 17: Finale Daten nach ORDER BY sortiert. Finale Zeilen: " . count($final_output_pre_sort));
+    error_log("Phase 17: Finale Daten nach ORDER BY sortiert. Finale Zeilen: " . count($resultData));
 
-    return $final_output_pre_sort;
+    return $resultData;
 }

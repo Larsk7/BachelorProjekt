@@ -56,7 +56,7 @@ if (!$stichtag || !$wahl) {
 try {
     $rawData = loadAllRawData(DB_CONFIG_HISRM, DB_CONFIG_PORTAL, $stichtag);
     
-    $combinedHisrmPortal = combineHisrmPortalData(
+    $dataPhase1 = combineHisrmPortalData(
         $rawData['hisrm_data'],
         $rawData['portal_data']
     );
@@ -69,8 +69,8 @@ try {
 }
 
 // --- 2 ---
-$finalTransformedDataPhase2 = leftjoin_info(
-    $combinedHisrmPortal,
+$dataPhase2 = leftjoin_info(
+    $dataPhase1,
     $stichtag,
     TBL_INFO_ABTEILUNGEN,
     $rawData['pbv_lookup_data'],
@@ -79,31 +79,31 @@ $finalTransformedDataPhase2 = leftjoin_info(
 );
 
 // --- 3 --- 
-$aggregatedData = aggregate_info($finalTransformedDataPhase2); // Ergebnis der Abfrage "mitarbeiter-pbv-distinct-a-zwT (2/6 auf der ReadMe-todo-liste)
+$dataPhase3 = aggregate_info($dataPhase2); // Ergebnis der Abfrage "mitarbeiter-pbv-distinct-a-zwT (2/6 auf der ReadMe-todo-liste)
 
 // --- 4 ---
-$dataDisBFvzwT = filterMitPbv($aggregatedData); // Ergebnis von "mitarbeiter_pbv_distinct_b_filtered_von_zwT 
+$dataPhase4 = filterMitPbv($dataPhase3); // Ergebnis von "mitarbeiter_pbv_distinct_b_filtered_von_zwT 
 
 // --- 5 --- (die 5 Quellen -> Join um WVZ-Stichtag zu bekommen)
 
     //für lehr
-    $dataLehrDt = filterLehrDt($dataDisBFvzwT); // 5_1_lehr_dt data
+    $dataPhase5_1lehr = filterLehrDt($dataPhase4); // 5_1_lehr_dt data
 
-    $filteredLehrDisDt = aggregateAndFilterLehrDisDt($dataLehrDt); // 5_2 filter and aggregate
-    $dataLehrDisDt = SelectLehrDisDt($filteredLehrDisDt);                    // 5_2_lehr_dis_dt data
+    $dataPhase5_2_1_lehr = aggregateAndFilterLehrDisDt($dataPhase5_1lehr); // 5_2 filter and aggregate
+    $dataPhase5_2_lehr = SelectLehrDisDt($dataPhase5_2_1_lehr);                    // 5_2_lehr_dis_dt data
 
     //für wiss
-    $dataWissDt = filterWissDt($dataDisBFvzwT); // 5_1_wiss_dt data
+    $dataPhase5_1_wiss = filterWissDt($dataPhase4); // 5_1_wiss_dt data
 
-    $dataWissDisDt = WissDisDt($dataWissDt); // 5_2_wiss_dis_dt data
+    $dataPhase5_2_wiss = WissDisDt($dataPhase5_1_wiss); // 5_2_wiss_dis_dt data
 
     //für sons
-    $dataSonsDt = filterSonsDt($dataDisBFvzwT); // 5_1_sons_dt data
+    $dataPhase5_1_sons = filterSonsDt($dataPhase4); // 5_1_sons_dt data
 
-    $dataSonsDisDt = SonsDisDt($dataSonsDt); // 5_2_sons_dis_dt data      
+    $dataPhase5_2_sons = SonsDisDt($dataPhase5_1_sons); // 5_2_sons_dis_dt data      
     
     //für studierende
-    $dataStudierende = processStudierende(
+    $dataPhase5_studi = processStudierende(
         DB_CONFIG_PORTAL,
         $stichtag,
         TBL_INFO_LEHRBEREICHE,
@@ -112,7 +112,7 @@ $dataDisBFvzwT = filterMitPbv($aggregatedData); // Ergebnis von "mitarbeiter_pbv
     );
 
     //für promovierende
-    $dataPromovierende = processPromovierende(
+    $dataPhase5_promo = processPromovierende(
         DB_CONFIG_PORTAL, // Rohdaten von mannheim.wahlen2
         $stichtag,
         TBL_INFO_LEHRBEREICHE,
@@ -122,17 +122,17 @@ $dataDisBFvzwT = filterMitPbv($aggregatedData); // Ergebnis von "mitarbeiter_pbv
 
 // --- 6 --- liefert wvz_st
 
-$dataWvzSt = wvz_st(
-    $dataLehrDisDt,
-    $dataWissDisDt,
-    $dataStudierende,
-    $dataPromovierende,
-    $dataSonsDisDt
+$dataPhase6 = wvz_st(
+    $dataPhase5_2_lehr,
+    $dataPhase5_2_wiss,
+    $dataPhase5_studi,
+    $dataPhase5_promo,
+    $dataPhase5_2_sons
 );
 
 // --- 7 --- liefert wvz_st_form
-$dataWvzStF = wvz_st_f(
-    $dataWvzSt,
+$dataPhase7 = wvz_st_f(
+    $dataPhase6,
     TBL_INFO_WÄHLENDENGRUPPE,
     TBL_INFO_ABTEILUNGEN,
     TBL_INFO_FAKULTÄTEN,
@@ -141,50 +141,50 @@ $dataWvzStF = wvz_st_f(
 
 // --- 8 --- liefert wvz_st_form_ecum
 
-$dataWvzStFEcum = wvz_st_f_ecum(
-        $dataWvzStF, 
+$dataPhase8 = wvz_st_f_ecum(
+        $dataPhase7, 
         DB_CONFIG_PORTAL, 
         TBL_INFO_WÄHLENDENGRUPPE
     );
 
 // --- 9 --- liefert wvz_st_form_ecum_2020
 
-$dataHilfDegree = hilf_degree(DB_CONFIG_PORTAL);
+$dataPhase9_1 = hilf_degree(DB_CONFIG_PORTAL);
 
-$dataHilfDegreeDis = hilf_degree_dis($dataHilfDegree);
+$dataPhase9_2 = hilf_degree_dis($dataPhase9_1);
 
-$dataWvzStFEcum2020 = wvz_st_f_ecum_2020(
-    $dataWvzStFEcum,
+$dataPhase9 = wvz_st_f_ecum_2020(
+    $dataPhase8,
     DB_CONFIG_PORTAL,
-    $dataHilfDegreeDis,
+    $dataPhase9_2,
     $stichtag
 );
 // --- 10 --- liefert wvz_befüllen
 // überflüssig, da diese Abfrage nur eine neue Tabelle anlegt und nach Nachname sortiert (ist schon danach sortiert)
 
 // --- 11 --- liefert fin_wvz_promprob
-$fin_wvz_promprob = fin_wvz_promprob(
-    $dataWvzStFEcum2020);
+$dataPhase11 = fin_wvz_promprob(
+    $dataPhase9);
 
 // --- 12 --- liefert fin_wvz_promprob_akad
-$fin_wvz_promprob_akad = fin_wvz_promprob_akad(
-    $dataWvzStFEcum2020, 
-    $fin_wvz_promprob
+$dataPhase12 = fin_wvz_promprob_akad(
+    $dataPhase9, 
+    $dataPhase11
 );
 
 // --- 13 --- liefert fin_wvz_promZdel
-$fin_wvz_promZdel = fin_wvz_promZdel(
-    $dataWvzStFEcum2020, // Das zu filternde Original-Array
-    $fin_wvz_promprob_akad // Die IDs/Kriterien zum Löschen
+$dataPhase13 = fin_wvz_promZdel(
+    $dataPhase9, // Das zu filternde Original-Array
+    $dataPhase12 // Die IDs/Kriterien zum Löschen
 );
 
 // -- 14 --- liefert FachschaftLückenFürPromovierendeFüllen
-$FSLueckFuerPromFuell = updateFakultaetPromovierende(
-    $fin_wvz_promZdel);
+$dataPhase14 = updateFakultaetPromovierende(
+    $dataPhase13);
 
 // --- 15 --- liefert Fin_WVZ
-$finalesWaehlerverzeichnis = fin_wvz(
-    $FSLueckFuerPromFuell);
+$dataPhase15 = fin_wvz(
+    $dataPhase14);
 
 // Output
 $buffered_output = ob_get_clean();
@@ -198,9 +198,9 @@ if (!empty($buffered_output)) {
 }
 
 // Anzahl Datensätze ermitteln
-$row_count = count($finalesWaehlerverzeichnis);
+$row_count = count($dataPhase15);
 
 echo json_encode([
-    'wvz'     => $finalesWaehlerverzeichnis,
+    'wvz'     => $dataPhase15,
     'rowCount' => $row_count
 ]);
