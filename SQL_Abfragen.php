@@ -49,6 +49,28 @@ hilf_pfi_stichtag_max_prio_sva AS (
 SELECT * FROM hilf_pfi_stichtag_max_prio_sva;         
 ";
 
+const SQL_SVA2 = "
+WITH hilf_pfi_stichtag AS (
+    SELECT *
+    FROM sva4.pfi AS pfi
+    WHERE (((pfi.pfi_von) <= :stichtag) 
+        AND (pfi.pfi_bis IS NULL OR (pfi.pfi_bis) >= :stichtag)) AND pfi_status = 0
+),
+hilf_pfi_stichtag_max AS (
+    SELECT DISTINCT pfi.*
+    FROM hilf_pfi_stichtag AS pfi LEFT JOIN hilf_pfi_stichtag AS pfi2 ON (pfi.pfi_pbv_nr = pfi2.pfi_pbv_nr) AND
+        (pfi.pfi_pgd_join_id = pfi2.pfi_pgd_join_id AND pfi.pfi_prozent < pfi2.pfi_prozent AND pfi.pfi_status = pfi2.pfi_status)
+    WHERE pfi2.pfi_serial IS NULL AND pfi.pfi_status = 0
+),
+hilf_pfi_stichtag_max_prio AS (
+    SELECT DISTINCT pfi.*
+    FROM hilf_pfi_stichtag_max AS pfi LEFT JOIN hilf_pfi_stichtag_max AS pfi2 ON (pfi.pfi_pbv_nr = pfi2.pfi_pbv_nr) 
+        AND (pfi.pfi_pgd_join_id = pfi2.pfi_pgd_join_id AND pfi.pfi_von > pfi2.pfi_von AND pfi.pfi_status = pfi2.pfi_status)
+    WHERE pfi2.pfi_serial IS NULL
+)
+SELECT * FROM hilf_pfi_stichtag_max_prio;          
+";
+
 const SQL_PORTAL = "
 WITH mannheim_wahlen2_casted AS (
     SELECT

@@ -12,6 +12,7 @@ require_once '../Info_Tabellen.php';
 require_once  '../SQL_Abfragen.php';
 
 require_once 'db_loader.php';
+require_once '0_mit_pbv_raw.php';
 require_once '1_join_sva_portal.php';
 require_once '2_leftjoin_info.php';
 require_once '3_aggregate_info.php';
@@ -51,6 +52,23 @@ if (!$stichtag || !$wahl) {
     echo json_encode(['error' => 'Missing Stichtag or Wahl parameter.']);
     exit();
 }
+
+/*
+// --- 0 --- (soll 1 und 2 ersetzen)
+
+$loadDataPhase0 = mit_pbv_raw(DB_CONFIG_HISRM, DB_CONFIG_PORTAL, $stichtag);
+    
+$dataPhase0 = processMitPbvRaw(
+    $loadDataPhase0['hilfStMaxPrio'],
+    $loadDataPhase0['maWahlPers'],
+    $loadDataPhase0['paz'],
+    $loadDataPhase0['pbv'],
+    $loadDataPhase0['pbl'],
+    $loadDataPhase0['pbu'],
+    $stichtag
+);
+
+*/
 
 // --- 1 ---
 try {
